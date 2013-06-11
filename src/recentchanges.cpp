@@ -1350,6 +1350,26 @@ namespace gnote {
     if (m_entry_changed_timeout) {
       m_entry_changed_timeout->cancel ();
     }
+    if (!get_search_text().empty()
+        && m_current_matches.empty()) {
+        try{
+          Note::Ptr new_note =m_manager.create(get_search_text());
+          new_note->get_window()->show();
+          get_search_text().clear();
+          m_current_matches.clear();
+          m_find_combo.get_entry()->set_text("");
+        }
+        catch(const std::exception & e)
+        {
+          utils::HIGMessageDialog dialog (
+            NULL,  (GtkDialogFlags)0,
+            Gtk::MESSAGE_ERROR,
+            Gtk::BUTTONS_OK,
+            _("Cannot create new note"),
+            e.what());
+          dialog.run ();
+        }
+    }
 
     entry_changed_timeout();
   }
